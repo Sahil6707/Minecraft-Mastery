@@ -4,8 +4,6 @@ import {
   Menu,
   X,
   BookmarkCheck,
-  Sun,
-  Moon,
   ShieldCheck,
   Mail,
   Info,
@@ -32,41 +30,39 @@ interface NavbarProps {
   setGlobalSearchQuery: (query: string) => void;
   bookmarksCount: number;
   onOpenBookmarks: () => void;
-  isDark: boolean;
-  setIsDark: (dark: boolean) => void;
 }
 
 const NAV_GROUPS = [
   {
     label: 'Survival',
     items: [
-      { id: 'home', label: 'Home', icon: <Home className="w-3.5 h-3.5" />, desc: 'Start here' },
-      { id: 'progression', label: 'Progression', icon: <TrendingUp className="w-3.5 h-3.5" />, desc: 'Milestone quest book' },
-      { id: 'farms', label: 'Farm Hub', icon: <Tractor className="w-3.5 h-3.5" />, desc: 'Automated farm builds' },
+      { id: 'home',        label: 'Home',        icon: <Home className="w-3.5 h-3.5" />,      desc: 'Start here' },
+      { id: 'progression', label: 'Progression',  icon: <TrendingUp className="w-3.5 h-3.5" />, desc: 'Milestone quest book' },
+      { id: 'farms',       label: 'Farm Hub',     icon: <Tractor className="w-3.5 h-3.5" />,    desc: 'Automated farm builds' },
     ],
   },
   {
     label: 'Reference',
     items: [
-      { id: 'enchantments', label: 'Enchantments', icon: <Zap className="w-3.5 h-3.5" />, desc: 'Spell book guide' },
-      { id: 'biomes', label: 'Biomes', icon: <Trees className="w-3.5 h-3.5" />, desc: 'Territory explorer' },
-      { id: 'villagers', label: 'Villagers & Jobs', icon: <Users className="w-3.5 h-3.5" />, desc: 'Trading hall guide' },
-      { id: 'mobs', label: 'Mob Index', icon: <Skull className="w-3.5 h-3.5" />, desc: 'Creature encyclopedia' },
+      { id: 'enchantments', label: 'Enchantments',    icon: <Zap className="w-3.5 h-3.5" />,      desc: 'Spell book guide' },
+      { id: 'biomes',       label: 'Biomes',          icon: <Trees className="w-3.5 h-3.5" />,     desc: 'Territory explorer' },
+      { id: 'villagers',    label: 'Villagers & Jobs', icon: <Users className="w-3.5 h-3.5" />,    desc: 'Trading hall guide' },
+      { id: 'mobs',         label: 'Mob Index',        icon: <Skull className="w-3.5 h-3.5" />,    desc: 'Creature encyclopedia' },
     ],
   },
   {
     label: 'Explore',
     items: [
-      { id: 'structures', label: 'Structures', icon: <Building2 className="w-3.5 h-3.5" />, desc: 'Dungeons & ruins' },
-      { id: 'redstone', label: 'Redstone', icon: <Cpu className="w-3.5 h-3.5" />, desc: 'Engineering blueprints' },
-      { id: 'dimensions', label: 'Dimensions', icon: <Globe className="w-3.5 h-3.5" />, desc: 'Nether & End portals' },
+      { id: 'structures',  label: 'Structures',  icon: <Building2 className="w-3.5 h-3.5" />, desc: 'Dungeons & ruins' },
+      { id: 'redstone',    label: 'Redstone',    icon: <Cpu className="w-3.5 h-3.5" />,       desc: 'Engineering blueprints' },
+      { id: 'dimensions',  label: 'Dimensions',  icon: <Globe className="w-3.5 h-3.5" />,     desc: 'Nether & End portals' },
     ],
   },
   {
     label: 'Tools',
     items: [
       { id: 'calculators', label: 'Calculators', icon: <Calculator className="w-3.5 h-3.5" />, desc: 'Survival calculators' },
-      { id: 'updates', label: 'Updates', icon: <Newspaper className="w-3.5 h-3.5" />, desc: 'Patch notes logbook' },
+      { id: 'updates',     label: 'Updates',     icon: <Newspaper className="w-3.5 h-3.5" />,  desc: 'Patch notes logbook' },
     ],
   },
 ];
@@ -81,9 +77,7 @@ function DropdownMenu({
   onNavigate: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const isGroupActive = group.items.some((i) => i.id === activeTab);
 
   const handleMouseEnter = () => {
@@ -97,12 +91,7 @@ function DropdownMenu({
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
 
   return (
-    <div
-      ref={ref}
-      className="relative"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <button
         className={`flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-mono font-bold transition-all duration-150 whitespace-nowrap ${
           isGroupActive
@@ -115,12 +104,9 @@ function DropdownMenu({
         aria-haspopup="true"
       >
         {group.label}
-        <ChevronDown
-          className={`w-3 h-3 transition-transform duration-200 ${open ? 'rotate-180 text-emerald-400' : 'opacity-60'}`}
-        />
+        <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${open ? 'rotate-180 text-emerald-400' : 'opacity-60'}`} />
       </button>
 
-      {/* Dropdown panel */}
       {open && (
         <div className="absolute top-full left-0 mt-1 w-52 bg-slate-900/98 backdrop-blur-xl border border-emerald-900/30 rounded-xl shadow-2xl shadow-black/50 z-[200] overflow-hidden">
           <div className="p-1.5">
@@ -159,8 +145,6 @@ export default function Navbar({
   setGlobalSearchQuery,
   bookmarksCount,
   onOpenBookmarks,
-  isDark,
-  setIsDark,
 }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -170,18 +154,6 @@ export default function Navbar({
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
-
-  const toggleTheme = () => {
-    const next = !isDark;
-    setIsDark(next);
-    if (next) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('minecraft_mastery_theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('minecraft_mastery_theme', 'light');
-    }
-  };
 
   const handleNavClick = (id: string) => {
     setActiveTab(id);
@@ -197,7 +169,6 @@ export default function Navbar({
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* ── Single header row — never overflows ── */}
         <div className="flex items-center h-16 gap-3 min-w-0">
 
           {/* LEFT: Logo */}
@@ -219,7 +190,7 @@ export default function Navbar({
             </div>
           </button>
 
-          {/* DESKTOP DROPDOWNS — hidden on mobile */}
+          {/* DESKTOP DROPDOWNS */}
           <div className="hidden md:flex items-center gap-0.5 shrink-0">
             {NAV_GROUPS.map((group) => (
               <DropdownMenu
@@ -231,15 +202,15 @@ export default function Navbar({
             ))}
           </div>
 
-          {/* CENTER: Search — grows to fill remaining space */}
+          {/* CENTER: Search */}
           <div className="flex-1 min-w-0 hidden sm:block max-w-md lg:max-w-lg mx-2">
             <GlobalSearch onNavigate={handleNavClick} autoFocus={false} />
           </div>
 
-          {/* RIGHT: Actions — never shrinks */}
+          {/* RIGHT: Actions */}
           <div className="flex items-center gap-1.5 shrink-0 ml-auto sm:ml-0">
 
-            {/* Verified badge — only large screens */}
+            {/* Verified badge */}
             <div
               className="hidden xl:flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-950/40 border border-emerald-900/40 text-emerald-400 font-mono text-[9px] font-bold select-none"
               title="100% Ad-Free Verified Minecraft Knowledge"
@@ -248,27 +219,7 @@ export default function Navbar({
               <span>VERIFIED</span>
             </div>
 
-            {/* Theme toggle — all breakpoints */}
-            <button
-              onClick={toggleTheme}
-              className="flex items-center gap-1 px-2 py-1.5 rounded-lg border text-xs font-mono font-bold transition-all duration-200 bg-slate-800/60 border-slate-700/60 text-gray-300 hover:border-emerald-500/40 hover:text-white"
-              aria-label="Toggle theme"
-              title={isDark ? 'Switch to Light mode' : 'Switch to Dark mode'}
-            >
-              {isDark ? (
-                <>
-                  <Sun className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="hidden lg:inline">Light</span>
-                </>
-              ) : (
-                <>
-                  <Moon className="w-3.5 h-3.5 text-indigo-400" />
-                  <span className="hidden lg:inline">Dark</span>
-                </>
-              )}
-            </button>
-
-            {/* About — md+ */}
+            {/* About */}
             <button
               onClick={() => handleNavClick('about')}
               className={`hidden md:flex items-center gap-1 px-2 py-1.5 rounded-lg border text-xs font-mono font-bold transition-all duration-200 ${
@@ -281,7 +232,7 @@ export default function Navbar({
               <span className="hidden lg:inline">About</span>
             </button>
 
-            {/* Contact — md+ */}
+            {/* Contact */}
             <a
               href="mailto:contact@minecraftmastery.com"
               className="hidden md:flex items-center gap-1 px-2 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-950/30 text-emerald-300 text-xs font-mono font-bold transition-all duration-200 hover:bg-emerald-900/40 hover:border-emerald-400/50"
@@ -320,10 +271,9 @@ export default function Navbar({
         </div>
       </div>
 
-      {/* ── MOBILE DRAWER ── */}
+      {/* MOBILE DRAWER */}
       {mobileOpen && (
         <div className="md:hidden bg-slate-950/99 backdrop-blur-xl border-t border-slate-800/60 shadow-2xl">
-          {/* Mobile search */}
           <div className="px-4 pt-3 pb-2">
             <GlobalSearch
               onNavigate={(tab) => { handleNavClick(tab); setMobileOpen(false); }}
@@ -331,7 +281,6 @@ export default function Navbar({
             />
           </div>
 
-          {/* Mobile nav grouped grid */}
           <div className="px-4 pb-4 space-y-3">
             {NAV_GROUPS.map((group) => (
               <div key={group.label}>
@@ -359,7 +308,6 @@ export default function Navbar({
               </div>
             ))}
 
-            {/* Mobile About + Contact */}
             <div className="flex gap-2 pt-1 border-t border-slate-800/60">
               <button
                 onClick={() => handleNavClick('about')}

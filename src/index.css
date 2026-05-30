@@ -9,16 +9,16 @@
   --font-mono: "JetBrains Mono", SFMono-Regular, monospace;
 }
 
-/* Base custom style configurations for premium Minecraft atmosphere */
+/* Base — always dark Minecraft theme */
+html {
+  color-scheme: dark;
+}
+
 body {
   overflow-x: hidden;
   font-family: var(--font-sans);
-  background-color: #060a13; /* Premium dark obsidian */
-  color: #F3F4F6; /* text-gray-200 */
-}
-
-.dark body {
   background-color: #060a13;
+  color: #F3F4F6;
 }
 
 h1, h2, h3, h4, .font-display {
@@ -27,57 +27,29 @@ h1, h2, h3, h4, .font-display {
 
 /* Premium Minecraft-inspired Aurora slow morph animations */
 @keyframes auroraSlow1 {
-  0% {
-    transform: translate(0, 0) scale(1) rotate(0deg);
-  }
-  50% {
-    transform: translate(60px, -30px) scale(1.1) rotate(8deg);
-  }
-  100% {
-    transform: translate(30px, 30px) scale(0.95) rotate(-5deg);
-  }
+  0%   { transform: translate(0, 0) scale(1) rotate(0deg); }
+  50%  { transform: translate(60px, -30px) scale(1.1) rotate(8deg); }
+  100% { transform: translate(30px, 30px) scale(0.95) rotate(-5deg); }
 }
 
 @keyframes auroraSlow2 {
-  0% {
-    transform: translate(0, 0) scale(1) rotate(0deg);
-  }
-  50% {
-    transform: translate(-70px, 40px) scale(0.9) rotate(-8deg);
-  }
-  100% {
-    transform: translate(-30px, -40px) scale(1.05) rotate(10deg);
-  }
+  0%   { transform: translate(0, 0) scale(1) rotate(0deg); }
+  50%  { transform: translate(-70px, 40px) scale(0.9) rotate(-8deg); }
+  100% { transform: translate(-30px, -40px) scale(1.05) rotate(10deg); }
 }
 
 @keyframes auroraSlow3 {
-  0% {
-    transform: translate(0, 0) scale(0.95);
-  }
-  50% {
-    transform: translate(40px, -50px) scale(1.05);
-  }
-  100% {
-    transform: translate(-20px, 30px) scale(0.9);
-  }
+  0%   { transform: translate(0, 0) scale(0.95); }
+  50%  { transform: translate(40px, -50px) scale(1.05); }
+  100% { transform: translate(-20px, 30px) scale(0.9); }
 }
 
-/* Rises from bottom to top and fades, while drifting dynamically using custom variable */
+/* Rises from bottom to top and fades */
 @keyframes floatParticleUp {
-  0% {
-    transform: translateY(0) translateX(0) scale(0.6);
-    opacity: 0;
-  }
-  8% {
-    opacity: 0.75;
-  }
-  85% {
-    opacity: 0.65;
-  }
-  100% {
-    transform: translateY(-92vh) translateX(var(--drift, 25px)) scale(0.9);
-    opacity: 0;
-  }
+  0%   { transform: translateY(0) translateX(0) scale(0.6); opacity: 0; }
+  8%   { opacity: 0.75; }
+  85%  { opacity: 0.65; }
+  100% { transform: translateY(-92vh) translateX(var(--drift, 25px)) scale(0.9); opacity: 0; }
 }
 
 /* Premium smooth shadow & lift transitions */
@@ -95,11 +67,6 @@ h1, h2, h3, h4, .font-display {
 
 .minecraft-card:hover {
   transform: translateY(-5px) scale(1.015);
-  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.08);
-}
-
-/* Specific glowing borders for dark theme premium visual depth */
-.dark .minecraft-card:hover {
   box-shadow: 0 12px 30px -8px rgba(16, 185, 129, 0.15), 0 0 1px 1px rgba(16, 185, 129, 0.15);
   border-color: rgba(52, 211, 153, 0.35);
 }

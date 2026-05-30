@@ -21,7 +21,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
   const [globalSearchQuery, setGlobalSearchQuery] = useState<string>('');
   const [bookmarks, setBookmarks] = useState<string[]>([]);
-  const [isDark, setIsDark] = useState<boolean>(true);
   const [isBookmarksOpen, setIsBookmarksOpen] = useState<boolean>(false);
 
   // Load and Save Bookmarks
@@ -36,16 +35,10 @@ export default function App() {
     }
   }, []);
 
-  // Theme Sync effect — restore from localStorage on mount
+  // Always force dark mode — light theme has been removed
   useEffect(() => {
-    const saved = localStorage.getItem('minecraft_mastery_theme');
-    if (saved === 'light') {
-      document.documentElement.classList.remove('dark');
-      setIsDark(false);
-    } else {
-      document.documentElement.classList.add('dark');
-      setIsDark(true);
-    }
+    document.documentElement.classList.add('dark');
+    localStorage.removeItem('minecraft_mastery_theme');
   }, []);
 
   const handleToggleBookmark = (id: string) => {
@@ -66,15 +59,13 @@ export default function App() {
       <AnimatedBackground />
       <div className="relative z-10 min-h-screen flex flex-col">
         <Navbar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        globalSearchQuery={globalSearchQuery}
-        setGlobalSearchQuery={setGlobalSearchQuery}
-        bookmarksCount={bookmarks.length}
-        onOpenBookmarks={() => setIsBookmarksOpen(true)}
-        isDark={isDark}
-        setIsDark={setIsDark}
-      />
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          globalSearchQuery={globalSearchQuery}
+          setGlobalSearchQuery={setGlobalSearchQuery}
+          bookmarksCount={bookmarks.length}
+          onOpenBookmarks={() => setIsBookmarksOpen(true)}
+        />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
         {/* Render Tab Screens */}
