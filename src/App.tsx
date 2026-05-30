@@ -14,44 +14,16 @@ import ProgressionTimeline from './components/ProgressionTimeline';
 import UpdatesPanel from './components/UpdatesPanel';
 import AboutCreator from './components/AboutCreator';
 import AnimatedBackground from './components/AnimatedBackground';
-import { farms } from './data/farms';
-import { Bookmark, X, Info, Zap, ArrowRight, Eye, Sparkles } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
   const [globalSearchQuery, setGlobalSearchQuery] = useState<string>('');
-  const [bookmarks, setBookmarks] = useState<string[]>([]);
-
-  // Load and Save Bookmarks (kept for FarmHub bookmark feature)
-  useEffect(() => {
-    const saved = localStorage.getItem('minecraft_mastery_bookmarks');
-    if (saved) {
-      try {
-        setBookmarks(JSON.parse(saved));
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  }, []);
 
   // Always force dark mode — light theme has been removed
   useEffect(() => {
     document.documentElement.classList.add('dark');
     localStorage.removeItem('minecraft_mastery_theme');
   }, []);
-
-  const handleToggleBookmark = (id: string) => {
-    let next: string[] = [];
-    if (bookmarks.includes(id)) {
-      next = bookmarks.filter((x) => x !== id);
-    } else {
-      next = [...bookmarks, id];
-    }
-    setBookmarks(next);
-    localStorage.setItem('minecraft_mastery_bookmarks', JSON.stringify(next));
-  };
-
-  const bookmarkedFarms = farms.filter((f) => bookmarks.includes(f.id));
 
   return (
     <div className="min-h-screen relative transition-colors duration-300 text-neutral-800 dark:text-neutral-100 font-sans selection:bg-emerald-500/20 selection:text-emerald-450 z-0">
@@ -80,7 +52,7 @@ export default function App() {
                 Farms grow blocks and resources automatically while you focus on exploring and building. Here you will find step-by-step builds ranging from simple starter crop patches to advanced mob drops factories.
               </p>
             </div>
-            <FarmHub bookmarks={bookmarks} onToggleBookmark={handleToggleBookmark} />
+            <FarmHub />
           </div>
         )}
         {activeTab === 'calculators' && (
@@ -248,86 +220,6 @@ export default function App() {
         )}
       </main>
 
-      {/* Bookmarked Farms Side Drawer */}
-      {isBookmarksOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-slate-900 dark:bg-neutral-900 border-l border-neutral-200 dark:border-emerald-900/40 h-full shadow-2xl flex flex-col justify-between">
-            <div className="p-5 border-b border-neutral-200 dark:border-neutral-800 bg-slate-900 dark:bg-neutral-950 flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Bookmark className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                <h3 className="font-bold font-sans text-base text-neutral-800 dark:text-neutral-100 uppercase tracking-widest">
-                  Bookmarked Farms ({bookmarkedFarms.length})
-                </h3>
-              </div>
-              <button
-                onClick={() => setIsBookmarksOpen(false)}
-                className="p-1 px-2 font-mono text-xs hover:bg-slate-900 dark:hover:bg-neutral-850 hover:text-red-500 dark:hover:text-red-400 text-neutral-500 dark:text-neutral-400 rounded border border-neutral-200 dark:border-neutral-800 transition"
-              >
-                Close (ESC)
-              </button>
-            </div>
-
-            {/* Bookmarked List */}
-            <div className="p-5 flex-1 overflow-y-auto space-y-3.5">
-              {bookmarkedFarms.length > 0 ? (
-                bookmarkedFarms.map((farm) => (
-                  <div
-                    key={farm.id}
-                    className="p-4 bg-slate-900 dark:bg-neutral-950 rounded-xl border border-neutral-200 dark:border-neutral-850 space-y-2 relative group hover:border-emerald-500/25 transition-all text-neutral-850 dark:text-neutral-100"
-                  >
-                    <button
-                      onClick={() => handleToggleBookmark(farm.id)}
-                      className="absolute top-3 right-3 text-neutral-400 hover:text-red-500 transition"
-                      title="Remove Bookmark"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-
-                    <span className="text-[8.5px] font-mono text-emerald-600 dark:text-emerald-400 uppercase bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/30 px-1.5 py-0.5 rounded">
-                      {farm.scale} • {farm.gameStage}
-                    </span>
-                    <h5 className="font-sans font-bold text-sm text-neutral-850 dark:text-neutral-200 mt-1.5">{farm.name}</h5>
-                    <p className="text-[11px] text-neutral-500 dark:text-neutral-400 font-sans line-clamp-2">
-                      {farm.description}
-                    </p>
-
-                    <div className="pt-2 flex justify-between font-mono text-[10.5px]">
-                      <span className="text-neutral-500 dark:text-neutral-400">Output:</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">{farm.outputPerHour}</span>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        setActiveTab('farms');
-                        setIsBookmarksOpen(false);
-                      }}
-                      className="w-full text-center py-1 mt-2 bg-slate-900 dark:bg-neutral-900 rounded font-mono text-[10px] text-neutral-600 dark:text-neutral-300 hover:text-emerald-600 dark:hover:text-emerald-400 border border-neutral-200 dark:border-neutral-800 transition shadow-xs"
-                    >
-                      Read detailed spec sheet
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-12 text-neutral-500 dark:text-neutral-450 font-mono text-xs leading-relaxed">
-                  No bookmarked design sheets yet. Browse the Farm Hub and select the bookmark ribbon icon!
-                </div>
-              )}
-            </div>
-
-            <div className="p-5 bg-neutral-50 dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800 flex gap-2">
-              <button
-                onClick={() => {
-                  setActiveTab('farms');
-                  setIsBookmarksOpen(false);
-                }}
-                className="w-full text-center py-2.5 bg-emerald-600 hover:bg-emerald-500 text-neutral-900 font-mono text-xs font-bold rounded-lg transition"
-              >
-                Browse directory & add farms
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Elegant Professional Footer */}
       <footer className="border-t border-neutral-200 dark:border-neutral-800 bg-slate-900 dark:bg-neutral-950/80 py-8 font-mono text-xs text-neutral-500 dark:text-neutral-400">

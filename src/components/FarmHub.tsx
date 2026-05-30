@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
 import { farms, Farm } from '../data/farms';
-import { Search, SlidersHorizontal, FileText, Bookmark, BookmarkCheck, Zap, Info } from 'lucide-react';
+import { Search, SlidersHorizontal, FileText, Zap, Info } from 'lucide-react';
 
-interface FarmHubProps {
-  bookmarks: string[];
-  onToggleBookmark: (id: string) => void;
-}
-
-export default function FarmHub({ bookmarks, onToggleBookmark }: FarmHubProps) {
+export default function FarmHub() {
   // Input search parameters
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -113,7 +108,7 @@ export default function FarmHub({ bookmarks, onToggleBookmark }: FarmHubProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredFarms.length > 0 ? (
           filteredFarms.map((farm) => {
-            const isFav = bookmarks.includes(farm.id);
+            const isFav = false; // bookmarks removed
             return (
               <div
                 key={farm.id}
@@ -160,18 +155,6 @@ export default function FarmHub({ bookmarks, onToggleBookmark }: FarmHubProps) {
                         </span>
                       </div>
                     </div>
-
-                    <button
-                      onClick={() => onToggleBookmark(farm.id)}
-                      className="p-1.5 rounded-md hover:bg-neutral-900 text-gray-400 hover:text-emerald-400 transition cursor-pointer"
-                      title={isFav ? 'Remove Bookmark' : 'Bookmark Farm'}
-                    >
-                      {isFav ? (
-                        <BookmarkCheck className="w-4 h-4 text-emerald-400" />
-                      ) : (
-                        <Bookmark className="w-4 h-4" />
-                      )}
-                    </button>
                   </div>
 
                   <p className="text-xs text-gray-200 font-sans mt-3 line-clamp-2 leading-relaxed font-medium">
@@ -353,15 +336,7 @@ export default function FarmHub({ bookmarks, onToggleBookmark }: FarmHubProps) {
             </div>
 
             <div className="p-4 bg-neutral-950 border-t border-emerald-950/60 text-right flex justify-between items-center">
-              <button
-                onClick={() => onToggleBookmark(viewingFarm.id)}
-                className="text-xs font-mono font-bold text-gray-400 hover:text-emerald-300 flex items-center gap-1.5 transition cursor-pointer"
-              >
-                <Bookmark className="w-4 h-4" />
-                <span>
-                  {bookmarks.includes(viewingFarm.id) ? 'Bookmarked' : 'Add Bookmark'}
-                </span>
-              </button>
+              <span />
               <button
                 onClick={() => setViewingFarm(null)}
                 className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 font-mono text-xs font-bold text-neutral-950 rounded-lg transition shadow-md cursor-pointer"
