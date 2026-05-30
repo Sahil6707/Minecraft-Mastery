@@ -3,11 +3,77 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
+
+    <!-- ═══════════════════════════════════════════════
+         PRIMARY SEO
+    ════════════════════════════════════════════════ -->
+    <title>Minecraft Mastery | Minecraft Guides, Farms &amp; Calculators</title>
+    <meta name="description" content="The ultimate Minecraft survival knowledge platform. Master automated farms, villager trading halls, enchantment guides, mob indexes, redstone engineering, biome exploration, and nether/end dimension survival — all in one dark-themed, ad-free wiki." />
+    <meta name="keywords" content="minecraft guide, minecraft farms, iron farm, villager trading, enchantments, minecraft survival, mob farm, enderman xp farm, nether hub, redstone tutorial, minecraft calculators, biomes guide, structures guide, minecraft wiki, minecraft mastery" />
+    <meta name="author" content="Sahil — Minecraft Mastery" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#060a13" />
+    <link rel="canonical" href="https://minecraft-mastery.vercel.app/" />
+
+    <!-- ═══════════════════════════════════════════════
+         FAVICON
+    ════════════════════════════════════════════════ -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+
+    <!-- ═══════════════════════════════════════════════
+         OPEN GRAPH (Facebook, Discord, LinkedIn, WhatsApp)
+    ════════════════════════════════════════════════ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Minecraft Mastery" />
+    <meta property="og:url" content="https://minecraft-mastery.vercel.app/" />
+    <meta property="og:title" content="Minecraft Mastery | Guides, Farms &amp; Calculators" />
+    <meta property="og:description" content="Your all-in-one Minecraft survival companion. Explore automated farms, villager halls, enchantments, mobs, redstone, biomes, dimensions and free survival calculators — ad-free and built for every skill level." />
+    <meta property="og:image" content="https://minecraft-mastery.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Minecraft Mastery — Dark themed Minecraft knowledge platform" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- ═══════════════════════════════════════════════
+         TWITTER / X CARDS
+    ════════════════════════════════════════════════ -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@sahil_mastery" />
+    <meta name="twitter:creator" content="@sahil_mastery" />
+    <meta name="twitter:title" content="Minecraft Mastery | Guides, Farms &amp; Calculators" />
+    <meta name="twitter:description" content="Your all-in-one Minecraft survival companion. Farms, enchantments, mobs, redstone, biomes, dimensions and free calculators — ad-free." />
+    <meta name="twitter:image" content="https://minecraft-mastery.vercel.app/og-image.png" />
+    <meta name="twitter:image:alt" content="Minecraft Mastery knowledge platform" />
+
+    <!-- ═══════════════════════════════════════════════
+         STRUCTURED DATA (JSON-LD)
+    ════════════════════════════════════════════════ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Minecraft Mastery",
+      "url": "https://minecraft-mastery.vercel.app/",
+      "description": "The ultimate Minecraft survival knowledge platform. Master automated farms, villager trading halls, enchantments, mob indexes, redstone engineering and more.",
+      "author": {
+        "@type": "Person",
+        "name": "Sahil",
+        "url": "https://minecraft-mastery.vercel.app/#about"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://minecraft-mastery.vercel.app/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

@@ -1,0 +1,11 @@
+# Minecraft Mastery — robots.txt
+# https://minecraft-mastery.vercel.app/
+
+User-agent: *
+Allow: /
+
+# Crawl-delay for responsible bot behavior
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://minecraft-mastery.vercel.app/sitemap.xml
