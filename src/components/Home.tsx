@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { BookOpen, Zap, Compass, Calculator, SwatchBook, ShieldAlert, Sparkles, Server, Cpu, Box, Swords, HelpCircle, ArrowRight, User, RotateCw, ChevronLeft, ChevronRight, Play, Pause, Layers, ShieldCheck } from 'lucide-react';
+import { BookOpen, Zap, Compass, Calculator, SwatchBook, ShieldAlert, Sparkles, Server, Cpu, Box, Swords, HelpCircle, ArrowRight, User, ChevronLeft, ChevronRight, Play, Pause, Layers, ShieldCheck } from 'lucide-react';
 
 interface FeaturedGuide {
   title: string;
@@ -113,7 +113,8 @@ export default function Home({ setActiveTab }: HomeProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [isShuffling, setIsShuffling] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const TOTAL = featuredGuides.length;
 
   // Initialize at a random guide index on mount
   useEffect(() => {
@@ -122,7 +123,7 @@ export default function Home({ setActiveTab }: HomeProps) {
 
   // Auto-rotation effect
   useEffect(() => {
-    if (isPaused || isShuffling) return;
+    if (isPaused || isTransitioning) return;
 
     const timer = setInterval(() => {
       setProgress((prev) => {
@@ -130,39 +131,24 @@ export default function Home({ setActiveTab }: HomeProps) {
           setCurrentIndex((current) => (current + 1) % featuredGuides.length);
           return 0;
         }
-        return prev + 1.25; // Smooth incremental speed
+        return prev + 1.25;
       });
     }, 80);
 
     return () => clearInterval(timer);
-  }, [isPaused, isShuffling]);
+  }, [isPaused, isTransitioning]);
 
-  const handleNext = () => {
-    if (isShuffling) return;
+  const goTo = (idx: number) => {
+    setIsTransitioning(true);
     setProgress(0);
-    setCurrentIndex((prev) => (prev + 1) % featuredGuides.length);
+    setTimeout(() => {
+      setCurrentIndex((idx + TOTAL) % TOTAL);
+      setIsTransitioning(false);
+    }, 180);
   };
 
-  const handlePrev = () => {
-    if (isShuffling) return;
-    setProgress(0);
-    setCurrentIndex((prev) => (prev - 1 + featuredGuides.length) % featuredGuides.length);
-  };
-
-  const handleShuffle = () => {
-    if (isShuffling) return;
-    setIsShuffling(true);
-    let count = 0;
-    const interval = setInterval(() => {
-      setCurrentIndex(Math.floor(Math.random() * featuredGuides.length));
-      count++;
-      if (count > 10) {
-        clearInterval(interval);
-        setIsShuffling(false);
-        setProgress(0);
-      }
-    }, 100);
-  };
+  const handleNext = () => { if (!isTransitioning) goTo(currentIndex + 1); };
+  const handlePrev = () => { if (!isTransitioning) goTo(currentIndex - 1); };
 
   // Stagger Container animations
   const containerVariants = {
@@ -305,57 +291,159 @@ export default function Home({ setActiveTab }: HomeProps) {
         </div>
       </motion.div>
 
-      {/* Today's Featured Guide */}
+      {/* ── TODAY'S FEATURED GUIDE ── */}
       <motion.div variants={itemVariants} className="space-y-5">
-        <div className="flex justify-between items-center border-b border-emerald-950/60 pb-2">
+        {/* Section header */}
+        <div className="flex justify-between items-center border-b border-emerald-950/60 pb-3">
           <h3 className="font-display text-sm font-bold text-gray-300 uppercase tracking-widest flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-emerald-450" /> Today's Featured Guide
           </h3>
-          <div className="flex items-center gap-2">
-            {/* Auto-rotate play/pause indicator button */}
-            <button
-              onClick={() => setIsPaused(!isPaused)}
-              className="p-1.5 rounded-lg border border-emerald-950/60 bg-neutral-950/50 hover:bg-slate-900 text-gray-300 hover:text-white transition cursor-pointer shadow-md"
-              title={isPaused ? "Play Autoplay" : "Pause Autoplay"}
-            >
-              {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
-            </button>
-            {/* Shuffle Roll Button */}
-            <button
-              onClick={handleShuffle}
-              disabled={isShuffling}
-              className={`p-1.5 rounded-lg border border-emerald-950/60 bg-neutral-950/50 hover:bg-slate-900 text-gray-300 hover:text-emerald-455 transition cursor-pointer shadow-md ${isShuffling ? 'animate-spin' : ''}`}
-              title="Roll Random Guide"
-            >
-              <RotateCw className="w-3.5 h-3.5" />
-            </button>
-            <div className="flex gap-1">
+
+          {/* ── PREMIUM CONTROLS ── */}
+          <div className="flex items-center gap-3">
+
+            {/* PREVIOUS — diamond-shaped, slides left on hover */}
+            <div className="relative group/prev">
               <button
                 onClick={handlePrev}
-                className="p-1.5 rounded-lg border border-emerald-950/60 bg-neutral-955/50 hover:bg-slate-900 text-gray-300 hover:text-white transition cursor-pointer shadow-md"
-                title="Previous Guide"
+                disabled={isTransitioning}
+                aria-label="Previous Guide"
+                className="
+                  relative w-9 h-9 flex items-center justify-center
+                  bg-slate-900 border-2 border-emerald-700/60
+                  hover:border-emerald-400 hover:bg-emerald-950/60
+                  disabled:opacity-40 disabled:cursor-not-allowed
+                  active:scale-90
+                  transition-all duration-200
+                  cursor-pointer
+                  rotate-45 shadow-lg shadow-black/40
+                  hover:shadow-emerald-500/20 hover:-translate-x-0.5
+                "
               >
-                <ChevronLeft className="w-3.5 h-3.5" />
+                <span className="-rotate-45">
+                  <ChevronLeft className="w-4 h-4 text-emerald-400" />
+                </span>
+                {/* corner glow */}
+                <span className="absolute inset-0 rotate-0 rounded-sm bg-emerald-400/0 group-hover/prev:bg-emerald-400/5 transition-colors duration-200" />
               </button>
+              {/* tooltip */}
+              <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-mono text-emerald-400 bg-slate-950/90 border border-emerald-900/40 px-1.5 py-0.5 rounded opacity-0 group-hover/prev:opacity-100 transition-opacity pointer-events-none z-10">
+                Previous Guide
+              </span>
+            </div>
+
+            {/* PLAY / PAUSE — glowing circular core with rotating ring */}
+            <div className="relative group/pp">
+              <button
+                onClick={() => setIsPaused(!isPaused)}
+                aria-label={isPaused ? 'Resume Rotation' : 'Pause Rotation'}
+                className="
+                  relative w-10 h-10 rounded-full flex items-center justify-center
+                  bg-slate-900 border-2
+                  active:scale-90 cursor-pointer
+                  transition-all duration-200
+                  shadow-lg
+                  "
+                style={{
+                  borderColor: isPaused ? 'rgba(52,211,153,0.3)' : 'rgba(52,211,153,0.7)',
+                  boxShadow: isPaused
+                    ? '0 0 0 0 rgba(52,211,153,0)'
+                    : '0 0 12px 2px rgba(52,211,153,0.25)',
+                }}
+              >
+                {/* rotating outer ring when playing */}
+                {!isPaused && (
+                  <svg
+                    className="absolute inset-0 w-full h-full animate-spin"
+                    style={{ animationDuration: '3s' }}
+                    viewBox="0 0 40 40"
+                  >
+                    <circle
+                      cx="20" cy="20" r="18"
+                      fill="none"
+                      stroke="rgba(52,211,153,0.35)"
+                      strokeWidth="1.5"
+                      strokeDasharray="8 4"
+                    />
+                  </svg>
+                )}
+                {/* pulsing inner ring when playing */}
+                {!isPaused && (
+                  <span className="absolute inset-1 rounded-full border border-emerald-500/30 animate-ping" />
+                )}
+                {isPaused
+                  ? <Play className="w-4 h-4 text-emerald-400 ml-0.5" />
+                  : <Pause className="w-4 h-4 text-emerald-300" />
+                }
+              </button>
+              {/* tooltip */}
+              <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-mono text-emerald-400 bg-slate-950/90 border border-emerald-900/40 px-1.5 py-0.5 rounded opacity-0 group-hover/pp:opacity-100 transition-opacity pointer-events-none z-10">
+                {isPaused ? 'Resume Rotation' : 'Pause Rotation'}
+              </span>
+            </div>
+
+            {/* NEXT — diamond-shaped, slides right on hover */}
+            <div className="relative group/next">
               <button
                 onClick={handleNext}
-                className="p-1.5 rounded-lg border border-emerald-950/60 bg-neutral-955/50 hover:bg-slate-900 text-gray-300 hover:text-white transition cursor-pointer shadow-md"
-                title="Next Guide"
+                disabled={isTransitioning}
+                aria-label="Next Guide"
+                className="
+                  relative w-9 h-9 flex items-center justify-center
+                  bg-slate-900 border-2 border-emerald-700/60
+                  hover:border-emerald-400 hover:bg-emerald-950/60
+                  disabled:opacity-40 disabled:cursor-not-allowed
+                  active:scale-90
+                  transition-all duration-200
+                  cursor-pointer
+                  rotate-45 shadow-lg shadow-black/40
+                  hover:shadow-emerald-500/20 hover:translate-x-0.5
+                "
               >
-                <ChevronRight className="w-3.5 h-3.5" />
+                <span className="-rotate-45">
+                  <ChevronRight className="w-4 h-4 text-emerald-400" />
+                </span>
+                <span className="absolute inset-0 rounded-sm bg-emerald-400/0 group-hover/next:bg-emerald-400/5 transition-colors duration-200" />
               </button>
+              {/* tooltip */}
+              <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-mono text-emerald-400 bg-slate-950/90 border border-emerald-900/40 px-1.5 py-0.5 rounded opacity-0 group-hover/next:opacity-100 transition-opacity pointer-events-none z-10">
+                Next Guide
+              </span>
+            </div>
+
+            {/* Slide dots */}
+            <div className="hidden sm:flex items-center gap-1 ml-1">
+              {featuredGuides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => goTo(i)}
+                  className={`transition-all duration-300 rounded-full ${
+                    i === currentIndex
+                      ? 'w-4 h-1.5 bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]'
+                      : 'w-1.5 h-1.5 bg-slate-700 hover:bg-emerald-700'
+                  }`}
+                  aria-label={`Go to guide ${i + 1}`}
+                />
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Featured Guide Card */}
+        {/* ── FEATURED CARD with fade+scale transition ── */}
         <div
-          className="relative bg-gradient-to-br from-slate-900 to-slate-950 border border-emerald-950/60 rounded-3xl overflow-hidden p-6 md:p-8 flex flex-col md:flex-row gap-6 items-center shadow-2xl transition-all duration-300 backdrop-blur-xs group/card"
+          className="relative bg-gradient-to-br from-slate-900 to-slate-950 border border-emerald-950/60 rounded-3xl overflow-hidden p-6 md:p-8 flex flex-col md:flex-row gap-6 items-center shadow-2xl backdrop-blur-xs group/card"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
+          style={{ minHeight: '200px' }}
         >
-          {/* Main Card Content */}
-          <div className="flex-1 space-y-4 w-full">
+          {/* Content fades + scales on transition */}
+          <div
+            className="flex-1 space-y-4 w-full transition-all duration-200"
+            style={{
+              opacity: isTransitioning ? 0 : 1,
+              transform: isTransitioning ? 'scale(0.97) translateY(6px)' : 'scale(1) translateY(0)',
+            }}
+          >
             <div className="flex items-center gap-2">
               <div className="p-1.5 rounded bg-emerald-950/40 border border-emerald-900/40 w-fit">
                 {featuredGuides[currentIndex].icon}
@@ -390,34 +478,50 @@ export default function Home({ setActiveTab }: HomeProps) {
             </div>
           </div>
 
-          {/* Thumbnail / SVG Visual Column */}
-          <div className="w-full md:w-56 h-40 md:h-48 rounded-2xl overflow-hidden relative shrink-0 shadow-inner flex items-center justify-center bg-neutral-955 border border-emerald-955/20 transition-transform duration-500 group-hover/card:scale-[1.01]">
-            {/* Base rich gradient */}
+          {/* Thumbnail column */}
+          <div
+            className="w-full md:w-56 h-40 md:h-48 rounded-2xl overflow-hidden relative shrink-0 shadow-inner flex items-center justify-center bg-neutral-955 border border-emerald-955/20 transition-all duration-200 group-hover/card:scale-[1.01]"
+            style={{
+              opacity: isTransitioning ? 0 : 1,
+              transform: isTransitioning ? 'scale(0.95)' : 'scale(1)',
+            }}
+          >
             <div className={`absolute inset-0 bg-gradient-to-br ${featuredGuides[currentIndex].gradient} opacity-90`} />
-            {/* Grid pattern overlay */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
-            
-            {/* Hover overlay glow */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12)_0%,transparent_75%)] opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-            {/* Glowing active block */}
             <motion.div
               key={currentIndex}
               initial={{ scale: 0.85, opacity: 0, rotate: -10 }}
               animate={{ scale: 1, opacity: 1, rotate: 0 }}
               transition={{ type: 'spring', stiffness: 120, damping: 10 }}
-              className="z-10 relative drop-shadow-[0_8px_24px_rgba(0,0,0,0.3)] hover:scale-[1.08] transition-transform duration-300"
+              className="z-10 relative drop-shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
             >
               {featuredGuides[currentIndex].svgOverlay}
             </motion.div>
           </div>
 
-          {/* Rotating Progress Line at the very bottom */}
-          <div className="absolute bottom-0 inset-x-0 h-1 bg-neutral-950/30 overflow-hidden">
+          {/* ── PREMIUM ENERGY PROGRESS BAR ── */}
+          <div className="absolute bottom-0 inset-x-0 h-[3px] bg-slate-950/60 overflow-visible">
+            {/* Track glow */}
+            <div className="absolute inset-0 bg-emerald-950/30" />
+            {/* Animated fill */}
             <div
-              className="h-full bg-emerald-500 dark:bg-emerald-400 transition-all duration-75 shadow-[0_-2px_8px_rgba(16,185,129,0.5)]"
-              style={{ width: `${progress}%` }}
-            />
+              className="relative h-full transition-none"
+              style={{
+                width: `${progress}%`,
+                background: 'linear-gradient(90deg, #065f46, #10b981, #34d399)',
+                boxShadow: '0 0 8px 1px rgba(52,211,153,0.5)',
+              }}
+            >
+              {/* Moving glow particle at the tip */}
+              <span
+                className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-emerald-300"
+                style={{
+                  boxShadow: '0 0 8px 3px rgba(52,211,153,0.8)',
+                  transform: 'translate(50%, -50%)',
+                }}
+              />
+            </div>
           </div>
         </div>
       </motion.div>
