@@ -1,0 +1,6 @@
+{
+  "name": "Minecraft Mastery",
+  "description": "The ultimate Minecraft knowledge platform featuring interactive calculators, guidebooks, dimensions, mob indices, structures, enchantments, and a comprehensive farm database.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
