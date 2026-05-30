@@ -36,10 +36,16 @@ export default function App() {
     }
   }, []);
 
-  // Theme Sync effect
+  // Theme Sync effect — restore from localStorage on mount
   useEffect(() => {
-    document.documentElement.classList.add('dark');
-    localStorage.setItem('minecraft_mastery_theme', 'dark');
+    const saved = localStorage.getItem('minecraft_mastery_theme');
+    if (saved === 'light') {
+      document.documentElement.classList.remove('dark');
+      setIsDark(false);
+    } else {
+      document.documentElement.classList.add('dark');
+      setIsDark(true);
+    }
   }, []);
 
   const handleToggleBookmark = (id: string) => {
