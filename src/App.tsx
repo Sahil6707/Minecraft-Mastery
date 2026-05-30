@@ -21,9 +21,8 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
   const [globalSearchQuery, setGlobalSearchQuery] = useState<string>('');
   const [bookmarks, setBookmarks] = useState<string[]>([]);
-  const [isBookmarksOpen, setIsBookmarksOpen] = useState<boolean>(false);
 
-  // Load and Save Bookmarks
+  // Load and Save Bookmarks (kept for FarmHub bookmark feature)
   useEffect(() => {
     const saved = localStorage.getItem('minecraft_mastery_bookmarks');
     if (saved) {
@@ -63,8 +62,6 @@ export default function App() {
           setActiveTab={setActiveTab}
           globalSearchQuery={globalSearchQuery}
           setGlobalSearchQuery={setGlobalSearchQuery}
-          bookmarksCount={bookmarks.length}
-          onOpenBookmarks={() => setIsBookmarksOpen(true)}
         />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">

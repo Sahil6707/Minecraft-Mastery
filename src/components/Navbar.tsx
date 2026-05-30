@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Bookmark,
   Menu,
   X,
-  BookmarkCheck,
   ShieldCheck,
   Mail,
   Info,
@@ -28,15 +26,13 @@ interface NavbarProps {
   setActiveTab: (tab: string) => void;
   globalSearchQuery: string;
   setGlobalSearchQuery: (query: string) => void;
-  bookmarksCount: number;
-  onOpenBookmarks: () => void;
 }
 
 const NAV_GROUPS = [
   {
     label: 'Survival',
     items: [
-      { id: 'home',        label: 'Home',        icon: <Home className="w-3.5 h-3.5" />,      desc: 'Start here' },
+      { id: 'home',        label: 'Home',        icon: <Home className="w-3.5 h-3.5" />,       desc: 'Start here' },
       { id: 'progression', label: 'Progression',  icon: <TrendingUp className="w-3.5 h-3.5" />, desc: 'Milestone quest book' },
       { id: 'farms',       label: 'Farm Hub',     icon: <Tractor className="w-3.5 h-3.5" />,    desc: 'Automated farm builds' },
     ],
@@ -44,18 +40,18 @@ const NAV_GROUPS = [
   {
     label: 'Reference',
     items: [
-      { id: 'enchantments', label: 'Enchantments',    icon: <Zap className="w-3.5 h-3.5" />,      desc: 'Spell book guide' },
-      { id: 'biomes',       label: 'Biomes',          icon: <Trees className="w-3.5 h-3.5" />,     desc: 'Territory explorer' },
-      { id: 'villagers',    label: 'Villagers & Jobs', icon: <Users className="w-3.5 h-3.5" />,    desc: 'Trading hall guide' },
-      { id: 'mobs',         label: 'Mob Index',        icon: <Skull className="w-3.5 h-3.5" />,    desc: 'Creature encyclopedia' },
+      { id: 'enchantments', label: 'Enchantments',     icon: <Zap className="w-3.5 h-3.5" />,   desc: 'Spell book guide' },
+      { id: 'biomes',       label: 'Biomes',           icon: <Trees className="w-3.5 h-3.5" />,  desc: 'Territory explorer' },
+      { id: 'villagers',    label: 'Villagers & Jobs',  icon: <Users className="w-3.5 h-3.5" />, desc: 'Trading hall guide' },
+      { id: 'mobs',         label: 'Mob Index',         icon: <Skull className="w-3.5 h-3.5" />, desc: 'Creature encyclopedia' },
     ],
   },
   {
     label: 'Explore',
     items: [
-      { id: 'structures',  label: 'Structures',  icon: <Building2 className="w-3.5 h-3.5" />, desc: 'Dungeons & ruins' },
-      { id: 'redstone',    label: 'Redstone',    icon: <Cpu className="w-3.5 h-3.5" />,       desc: 'Engineering blueprints' },
-      { id: 'dimensions',  label: 'Dimensions',  icon: <Globe className="w-3.5 h-3.5" />,     desc: 'Nether & End portals' },
+      { id: 'structures', label: 'Structures', icon: <Building2 className="w-3.5 h-3.5" />, desc: 'Dungeons & ruins' },
+      { id: 'redstone',   label: 'Redstone',   icon: <Cpu className="w-3.5 h-3.5" />,       desc: 'Engineering blueprints' },
+      { id: 'dimensions', label: 'Dimensions', icon: <Globe className="w-3.5 h-3.5" />,     desc: 'Nether & End portals' },
     ],
   },
   {
@@ -67,6 +63,19 @@ const NAV_GROUPS = [
   },
 ];
 
+// ── Smooth-scroll utility ─────────────────────────────────────────────────────
+function smoothScrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function smoothScrollToContact() {
+  const el = document.getElementById('creator-forms');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// ── Dropdown component ────────────────────────────────────────────────────────
 function DropdownMenu({
   group,
   activeTab,
@@ -80,18 +89,12 @@ function DropdownMenu({
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isGroupActive = group.items.some((i) => i.id === activeTab);
 
-  const handleMouseEnter = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setOpen(true);
-  };
-  const handleMouseLeave = () => {
-    timerRef.current = setTimeout(() => setOpen(false), 120);
-  };
-
+  const enter = () => { if (timerRef.current) clearTimeout(timerRef.current); setOpen(true); };
+  const leave = () => { timerRef.current = setTimeout(() => setOpen(false), 120); };
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
 
   return (
-    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div className="relative" onMouseEnter={enter} onMouseLeave={leave}>
       <button
         className={`flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-mono font-bold transition-all duration-150 whitespace-nowrap ${
           isGroupActive
@@ -138,13 +141,12 @@ function DropdownMenu({
   );
 }
 
+// ── Main Navbar ───────────────────────────────────────────────────────────────
 export default function Navbar({
   activeTab,
   setActiveTab,
   globalSearchQuery,
   setGlobalSearchQuery,
-  bookmarksCount,
-  onOpenBookmarks,
 }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -155,9 +157,26 @@ export default function Navbar({
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  /** Navigate to a tab, then scroll to top so user sees the page from the beginning */
   const handleNavClick = (id: string) => {
     setActiveTab(id);
     setMobileOpen(false);
+    smoothScrollToTop();
+  };
+
+  /** Navigate to About tab, then after React re-renders scroll to the contact form */
+  const handleContactClick = () => {
+    setActiveTab('about');
+    setMobileOpen(false);
+    // Small timeout lets React render the About page before we try to scroll to the element
+    setTimeout(smoothScrollToContact, 120);
+  };
+
+  /** Home: set tab to home and scroll to top */
+  const handleHomeClick = () => {
+    setActiveTab('home');
+    setMobileOpen(false);
+    smoothScrollToTop();
   };
 
   return (
@@ -171,11 +190,12 @@ export default function Navbar({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-16 gap-3 min-w-0">
 
-          {/* LEFT: Logo */}
+          {/* ── Logo / Home button ── */}
           <button
-            onClick={() => handleNavClick('home')}
+            onClick={handleHomeClick}
             className="flex items-center gap-2 shrink-0 group"
             aria-label="Go to home"
+            title="Home"
           >
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center border border-emerald-400/30 font-mono text-lg font-black text-slate-950 shadow-lg shadow-emerald-500/20 group-hover:shadow-emerald-500/40 transition-shadow">
               M
@@ -190,24 +210,44 @@ export default function Navbar({
             </div>
           </button>
 
-          {/* DESKTOP DROPDOWNS */}
+          {/* ── Desktop: Home pill + Dropdown groups ── */}
           <div className="hidden md:flex items-center gap-0.5 shrink-0">
-            {NAV_GROUPS.map((group) => (
-              <DropdownMenu
-                key={group.label}
-                group={group}
-                activeTab={activeTab}
-                onNavigate={handleNavClick}
-              />
-            ))}
+            {/* Dedicated Home button */}
+            <button
+              onClick={handleHomeClick}
+              className={`flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-mono font-bold transition-all duration-150 whitespace-nowrap border ${
+                activeTab === 'home'
+                  ? 'text-emerald-300 bg-emerald-950/40 border-emerald-500/25'
+                  : 'text-gray-400 hover:text-white hover:bg-slate-800/50 border-transparent'
+              }`}
+            >
+              <Home className="w-3.5 h-3.5" />
+              Home
+            </button>
+
+            {/* Dropdown groups (exclude home since it's a dedicated button above) */}
+            {NAV_GROUPS.filter(g => g.label !== 'Survival' || true).map((group) => {
+              // For Survival group, filter out 'home' item since it has its own button
+              const filteredGroup = group.label === 'Survival'
+                ? { ...group, items: group.items.filter(i => i.id !== 'home') }
+                : group;
+              return (
+                <DropdownMenu
+                  key={group.label}
+                  group={filteredGroup}
+                  activeTab={activeTab}
+                  onNavigate={handleNavClick}
+                />
+              );
+            })}
           </div>
 
-          {/* CENTER: Search */}
+          {/* ── Search bar ── */}
           <div className="flex-1 min-w-0 hidden sm:block max-w-md lg:max-w-lg mx-2">
             <GlobalSearch onNavigate={handleNavClick} autoFocus={false} />
           </div>
 
-          {/* RIGHT: Actions */}
+          {/* ── Right actions ── */}
           <div className="flex items-center gap-1.5 shrink-0 ml-auto sm:ml-0">
 
             {/* Verified badge */}
@@ -227,36 +267,20 @@ export default function Navbar({
                   ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-300'
                   : 'bg-slate-800/60 border-slate-700/60 text-gray-300 hover:border-emerald-500/40 hover:text-white'
               }`}
+              title="About the creator"
             >
               <Info className="w-3.5 h-3.5" />
               <span className="hidden lg:inline">About</span>
             </button>
 
-            {/* Contact */}
-            <a
-              href="mailto:contact@minecraftmastery.com"
-              className="hidden md:flex items-center gap-1 px-2 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-950/30 text-emerald-300 text-xs font-mono font-bold transition-all duration-200 hover:bg-emerald-900/40 hover:border-emerald-400/50"
+            {/* Contact — navigates to About tab and scrolls to contact form */}
+            <button
+              onClick={handleContactClick}
+              className="hidden md:flex items-center gap-1 px-2 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-950/30 text-emerald-300 text-xs font-mono font-bold transition-all duration-200 hover:bg-emerald-900/40 hover:border-emerald-400/50 hover:text-emerald-200"
+              title="Go to contact form"
             >
               <Mail className="w-3.5 h-3.5" />
               <span className="hidden lg:inline">Contact</span>
-            </a>
-
-            {/* Bookmarks */}
-            <button
-              onClick={onOpenBookmarks}
-              className="relative p-1.5 rounded-lg bg-slate-800/60 border border-slate-700/60 text-gray-400 hover:text-emerald-400 hover:border-emerald-500/40 transition-all"
-              aria-label="Open bookmarks"
-            >
-              {bookmarksCount > 0 ? (
-                <BookmarkCheck className="w-4 h-4 text-emerald-400" />
-              ) : (
-                <Bookmark className="w-4 h-4" />
-              )}
-              {bookmarksCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-emerald-500 rounded-full text-[9px] font-bold text-slate-950 flex items-center justify-center animate-pulse">
-                  {bookmarksCount}
-                </span>
-              )}
             </button>
 
             {/* Mobile hamburger */}
@@ -271,9 +295,10 @@ export default function Navbar({
         </div>
       </div>
 
-      {/* MOBILE DRAWER */}
+      {/* ── Mobile drawer ── */}
       {mobileOpen && (
         <div className="md:hidden bg-slate-950/99 backdrop-blur-xl border-t border-slate-800/60 shadow-2xl">
+          {/* Mobile search */}
           <div className="px-4 pt-3 pb-2">
             <GlobalSearch
               onNavigate={(tab) => { handleNavClick(tab); setMobileOpen(false); }}
@@ -282,32 +307,53 @@ export default function Navbar({
           </div>
 
           <div className="px-4 pb-4 space-y-3">
-            {NAV_GROUPS.map((group) => (
-              <div key={group.label}>
-                <p className="text-[9px] font-mono font-bold text-gray-600 uppercase tracking-widest px-1 mb-1.5">
-                  {group.label}
-                </p>
-                <div className="grid grid-cols-3 gap-1">
-                  {group.items.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => handleNavClick(item.id)}
-                      className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-center text-[11px] font-medium transition-all border ${
-                        activeTab === item.id
-                          ? 'text-emerald-300 bg-emerald-950/50 border-emerald-500/30 font-bold'
-                          : 'text-gray-400 bg-slate-800/40 border-slate-700/30 hover:text-white hover:bg-slate-800/70'
-                      }`}
-                    >
-                      <span className={activeTab === item.id ? 'text-emerald-400' : 'text-gray-600'}>
-                        {item.icon}
-                      </span>
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
+            {/* Mobile Home button */}
+            <button
+              onClick={handleHomeClick}
+              className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-bold border transition-all ${
+                activeTab === 'home'
+                  ? 'text-emerald-300 bg-emerald-950/50 border-emerald-500/30'
+                  : 'text-gray-300 bg-slate-800/40 border-slate-700/30 hover:text-white'
+              }`}
+            >
+              <Home className="w-4 h-4" />
+              Home
+            </button>
 
+            {/* Mobile nav groups */}
+            {NAV_GROUPS.map((group) => {
+              const items = group.label === 'Survival'
+                ? group.items.filter(i => i.id !== 'home')
+                : group.items;
+              if (items.length === 0) return null;
+              return (
+                <div key={group.label}>
+                  <p className="text-[9px] font-mono font-bold text-gray-600 uppercase tracking-widest px-1 mb-1.5">
+                    {group.label}
+                  </p>
+                  <div className="grid grid-cols-3 gap-1">
+                    {items.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => handleNavClick(item.id)}
+                        className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-center text-[11px] font-medium transition-all border ${
+                          activeTab === item.id
+                            ? 'text-emerald-300 bg-emerald-950/50 border-emerald-500/30 font-bold'
+                            : 'text-gray-400 bg-slate-800/40 border-slate-700/30 hover:text-white hover:bg-slate-800/70'
+                        }`}
+                      >
+                        <span className={activeTab === item.id ? 'text-emerald-400' : 'text-gray-600'}>
+                          {item.icon}
+                        </span>
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Mobile About + Contact */}
             <div className="flex gap-2 pt-1 border-t border-slate-800/60">
               <button
                 onClick={() => handleNavClick('about')}
@@ -315,12 +361,12 @@ export default function Navbar({
               >
                 <Info className="w-3.5 h-3.5" /> About
               </button>
-              <a
-                href="mailto:contact@minecraftmastery.com"
+              <button
+                onClick={handleContactClick}
                 className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border border-emerald-500/30 bg-emerald-950/30 text-emerald-300 text-xs font-mono font-bold hover:bg-emerald-900/40 transition-all"
               >
                 <Mail className="w-3.5 h-3.5" /> Contact
-              </a>
+              </button>
             </div>
           </div>
         </div>
